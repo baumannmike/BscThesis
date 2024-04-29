@@ -13,7 +13,7 @@ rawnephdata <- read.csv(nraw)
 time <- as.POSIXct(rawae31data$DateTimeUTC, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
 
 
-# Aurora 3000
+# Aurora 3000 jjj
 #----------------------------------------------------------------------------------------------------
 # total scattering coefficient blue, green, red
 #----------------------------------------------------------------------------------------------------
