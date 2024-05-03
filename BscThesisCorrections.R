@@ -203,13 +203,21 @@ WG6 = batn6/cref
 WG7 = batn7/cref
 
 
-plot(time, WG1, col = "blue", type = "l", xlab = "time", ylab = "Mm-1", main = "Aerosol absorption coefficient")
+plot(time, WG1, col = "blue", type = "l", xlab = "time", ylab = "Mm-1", main = "aerosol absorption coefficient with Weingartner correction")
 lines(time, WG2, col = "red", lty = 1)  
 lines(time, WG3, col = "green", lty = 1)
 lines(time, WG4, col = "yellow", lty = 1) 
 lines(time, WG5, col = "purple", lty = 1) 
 lines(time, WG6, col = "orange", lty = 1) 
 lines(time, WG7, col = "black", lty = 1) 
+
+legend("topright", 
+       legend = c("370 nm", "470 nm", "520 nm", "590 nm", "660 nm", "880 nm", "950 nm"), 
+       col = c("blue", "red", "green", "yellow", "purple", "orange", "black"), 
+       lty = 1)
+
+
+
 
 #----------------------------------------------------------------------------------------------------
 # Loading Effect Correction
