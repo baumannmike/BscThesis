@@ -93,7 +93,7 @@ rawae31data$X1c0_A11 <- as.numeric(rawae31data$X1c0_A11)
 corrae31data$BaB0_ <- as.numeric(corrae31data$BaB0_)
 
 # STP correction
-Pinstr <- mean(rawnephdata$P0_S11, na.rm = TRUE)
+Pinstr <- 960 #mean(rawnephdata$P0_S11, na.rm = TRUE)
 Tinstr <- rawnephdata$T10_S11 + 273.15
 Pstp <- 1013.25
 Tstp <- 273.15
@@ -101,8 +101,8 @@ Tstp <- 273.15
 STP <- (Pstp * Tinstr)/(Pinstr * Tstp)
 
 
-# Calculation batn
-data.batn370  <- 1e-3 * rawae31data$X1c0_A11*31.1
+# Calculation batn 
+data.batn370  <- 1e-3 * rawae31data$X1c0_A11 * 39.5
 
 #Apply Weingartner and STP
 babs <- (data.batn370/3.5)*STP
