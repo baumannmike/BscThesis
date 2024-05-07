@@ -153,15 +153,13 @@ rawnephdata$BsB0_S11 <- as.numeric(rawnephdata$BsB0_S11)
 rawnephdata$P0_S11 <- as.numeric(rawnephdata$P0_S11)
 rawnephdata$T10_S11 <- as.numeric(rawnephdata$T10_S11)
 
-Ninstr <- rawnephdata$BsB0_S11
+
 Pinstr <- mean(rawnephdata$P0_S11, na.rm = TRUE)
 Tinstr <- rawnephdata$T10_S11 + 273.15
 Pstp <- 1013.25
 Tstp <- 273.15
 
 # Mittelwert für Instrumentendruck
-# streuungsplots 
-# github code übernhemen clone repository, github
 
 STP <- (Pstp * Tinstr)/(Pinstr * Tstp)
 
@@ -294,10 +292,24 @@ legend("topright",
        cex = 0.8)
 
 #----------------------------------------------------------------------------------------------------
-# Boxplot Diagramme
+# Flow Correction
 #----------------------------------------------------------------------------------------------------
 
 
+rawae31data$X1c0_A11 <- as.numeric(rawae31data$X1c0_A11)
+rawae31data$Q0_A11 <- as.numeric(rawae31data$Q0_A11 )
+flow_buck = 3.74; 
+
+
+data.bc370 = (rawae31data$X1c0_A11 * rawae31data$Q0_A11) / (flow_buck * 1000)
+
+plot(time, data.bc370, col = "blue", type = "l", xlab = "time", ylab = "Mm-1", main = "Aurora3000")
+plot(time, corrae31data$X1c0_A11, col = "red", type = "l", xlab = "time", ylab = "Mm-1", main = "Aurora3000")
+
+
+#----------------------------------------------------------------------------------------------------
+# Boxplot Diagramme
+#----------------------------------------------------------------------------------------------------
 
 
 library(ggplot2)
@@ -360,8 +372,372 @@ ggplot(data, aes(x = date_group, y = factor )) +
 
 
 
+# Tagesgang time of day 
+# intensive properties berechnung single scattering albedo SSA & Angströmexponent
+# intrinsisch 
+
+# auf Switch drive Daten
+# meine korrektur und corrdaten
+
+#----------------------------------------------------------------------------------------------------
+# Korrekturen angewendet AE31
+#----------------------------------------------------------------------------------------------------
+
+rawnephdata$BsB0_S11 <- as.numeric(rawnephdata$BsB0_S11)
+rawnephdata$P0_S11 <- as.numeric(rawnephdata$P0_S11)
+rawnephdata$T10_S11 <- as.numeric(rawnephdata$T10_S11)
+rawae31data$X1c0_A11 <- as.numeric(rawae31data$X1c0_A11)
+
+
+# STP
+Pinstr <- mean(rawnephdata$P0_S11, na.rm = TRUE)
+Tinstr <- rawnephdata$T10_S11 + 273.15
+Pstp <- 1013.25
+Tstp <- 273.15
+
+STP <- (Pstp * Tinstr)/(Pinstr * Tstp)
+
+
+# Calculation batn
+data.batn370  <- 1e-3 * rawae31data$X1c0_A11*31.1
+
+#Apply Weingartner and STP
+babs <- (data.batn370/3.5)*STP
+
+
+plot(time, babs, col = "blue", type = "l", xlab = "time", ylab = "Mm-1", main = "Aurora3000")
+plot(time, corrae31data$BaB0_, col = "red", type = "l", xlab = "time", ylab = "Mm-1", main = "Aurora3000")
+
+plot(babs, corrae31data$BaB0_, main = "Correlationplot AE31", 
+     xlab = "corrected values", ylab = "CPD output", pch = 19, col = "blue")
+
+#----------------------------------------------------------------------------------------------------
+# Korrelationsplot Aurora3000
+#----------------------------------------------------------------------------------------------------
+
+#Müller
+
+#STP 
+
+rawnephdata$BsB0_S11 <- as.numeric(rawnephdata$BsB0_S11)
+rawnephdata$P0_S11 <- as.numeric(rawnephdata$P0_S11)
+rawnephdata$T10_S11 <- as.numeric(rawnephdata$T10_S11)
+
+
+Pinstr <- mean(rawnephdata$P0_S11, na.rm = TRUE)
+Tinstr <- rawnephdata$T10_S11 + 273.15
+Pstp <- 1013.25
+Tstp <- 273.15
+
+# Mittelwert für Instrumentendruck
+
+STP <- (Pstp * Tinstr)/(Pinstr * Tstp)
+
+# calculation of Angstrom exponent
+
+rawnephdata$BsB0_S11 <- as.numeric(rawnephdata$BsB0_S11)
+rawnephdata$BsG0_S11 <- as.numeric(rawnephdata$BsG0_S11)
+rawnephdata$BsR0_S11 <- as.numeric(rawnephdata$BsR0_S11)
+
+ang_bg = -1*(log(rawnephdata$BsB0_S11/rawnephdata$BsG0_S11)/(log(450/525)))
+
+
+#Müller constants
+
+a_blue = 1.455
+b_blue = -0.189
+a_green = 1.434
+b_green = -0.176
+a_red = 1.403
+b_red = -0.156
+
+tr_blue = a_blue + ang_bg * b_blue   
+
+
+x <- rawnephdata$BsB0_S11*STP*tr_blue
+
+plot(time, corrnephdata$BsB0_S11, col = "red", type = "l", xlab = "time", ylab = "Mm-1", main = "Aurora3000")
+
+plot(time, x, col = "blue", type = "l", xlab = "time", ylab = "Mm-1", main = "Aurora3000")
+
+plot(x, corrnephdata$BsB0_S11, main = "Correlationplot Aurora 3000", 
+     xlab = "corrected values", ylab = "CPD output", pch = 19, col = "blue")
+
+
+#----------------------------------------------------------------------------------------------------
+# Tagesgang AE31
+#----------------------------------------------------------------------------------------------------
+
+# Zuerst füge eine Spalte für die Stunde hinzu
+corrae31data$hour <- as.numeric(format(time, "%H"))
+corrae31data$BaB0_ <- as.numeric(corrae31data$BaB0_)
+corrae31data$BaG0_ <- as.numeric(corrae31data$BaG0_)
+corrae31data$BaR0_ <- as.numeric(corrae31data$BaR0_)
+
+# Dann gruppieren nach Stunde und den Durchschnitt berechnen
+hourly_avgb <- aggregate(corrae31data$BaB0_, by = list(hour = corrae31data$hour), FUN = function(x) mean(x, na.rm = TRUE))
+hourly_avgg <- aggregate(corrae31data$BaG0_, by = list(hour = corrae31data$hour), FUN = function(x) mean(x, na.rm = TRUE))
+hourly_avgr <- aggregate(corrae31data$BaR0_, by = list(hour = corrae31data$hour), FUN = function(x) mean(x, na.rm = TRUE))
+
+# Jetzt hast du einen Dataframe mit zwei Spalten: 'hour' und 'x' (der Durchschnittswert für jede Stunde)
+
+# Plot erstellen mit angepasster y-Achse
+plot(hourly_avgb$hour, hourly_avgb$x, col = "blue", type = "l", xlab = "Stunde", ylab = "Durchschnittswert", main = "Tagesgang", xaxt = "n", ylim = c(min(hourly_avgb$x, hourly_avgg$x, hourly_avgr$x), max(hourly_avgb$x, hourly_avgg$x, hourly_avgr$x)))
+lines(hourly_avgg$hour, hourly_avgg$x, col = "green")
+lines(hourly_avgr$hour, hourly_avgr$x, col = "red")
+
+# x-Achse beschriften
+axis(side = 1, at = hourly_avg$hour, labels = paste0(hourly_avg$hour, ":00"), las = 2, cex.axis = 0.8)
+
+
+#----------------------------------------------------------------------------------------------------
+# Tagesgang Aurora3000
+#----------------------------------------------------------------------------------------------------
+
+# Zuerst füge eine Spalte für die Stunde hinzu
+corrae31data$hour <- as.numeric(format(time, "%H"))
+corrnephdata$BsB0_S11 <- as.numeric(corrnephdata$BsB0_S11)
+corrnephdata$BsG0_S11 <- as.numeric(corrnephdata$BsG0_S11)
+corrnephdata$BsR0_S11 <- as.numeric(corrnephdata$BsR0_S11)
+
+corrnephdata$BbsB0_S11 <- as.numeric(corrnephdata$BbsB0_S11)
+corrnephdata$BbsG0_S11 <- as.numeric(corrnephdata$BbsG0_S11)
+corrnephdata$BbsR0_S11 <- as.numeric(corrnephdata$BbsR0_S11)
 
 
 
+# Dann gruppieren nach Stunde und den Durchschnitt berechnen
+hourly_avgtb <- aggregate(corrnephdata$BsB0_S11, by = list(hour = corrae31data$hour), FUN = function(x) mean(x, na.rm = TRUE))
+hourly_avgtg <- aggregate(corrnephdata$BsG0_S11, by = list(hour = corrae31data$hour), FUN = function(x) mean(x, na.rm = TRUE))
+hourly_avgtr <- aggregate(corrnephdata$BsR0_S11, by = list(hour = corrae31data$hour), FUN = function(x) mean(x, na.rm = TRUE))
+
+hourly_avgbb <- aggregate(corrnephdata$BbsB0_S11, by = list(hour = corrae31data$hour), FUN = function(x) mean(x, na.rm = TRUE))
+hourly_avgbg <- aggregate(corrnephdata$BbsG0_S11, by = list(hour = corrae31data$hour), FUN = function(x) mean(x, na.rm = TRUE))
+hourly_avgbr <- aggregate(corrnephdata$BbsR0_S11, by = list(hour = corrae31data$hour), FUN = function(x) mean(x, na.rm = TRUE))
+
+# Jetzt hast du einen Dataframe mit zwei Spalten: 'hour' und 'x' (der Durchschnittswert für jede Stunde)
+
+# Plot erstellen mit angepasster y-Achse
+plot(hourly_avgtb$hour, hourly_avgtb$x, col = "blue", type = "l", xlab = "Stunde", ylab = "Durchschnittswert", main = "Tagesgang", xaxt = "n", ylim = c(min(hourly_avgtb$x, hourly_avgtg$x, hourly_avgtr$x, hourly_avgbb$x, hourly_avgbg$x, hourly_avgbr$x), max(hourly_avgtb$x, hourly_avgtg$x, hourly_avgtr$x, hourly_avgbb$x, hourly_avgbg$x, hourly_avgbr$x)))
+lines(hourly_avgtg$hour, hourly_avgtg$x, col = "green")
+lines(hourly_avgtr$hour, hourly_avgtr$x, col = "red")
+
+lines(hourly_avgbb$hour, hourly_avgbb$x, col = "blue")
+lines(hourly_avgbg$hour, hourly_avgbg$x, col = "green")
+lines(hourly_avgbr$hour, hourly_avgbr$x, col = "red")
+
+# x-Achse beschriften
+axis(side = 1, at = hourly_avg$hour, labels = paste0(hourly_avg$hour, ":00"), las = 2, cex.axis = 0.8)
+
+#----------------------------------------------------------------------------------------------------
+# SSA | Vietnam
+#----------------------------------------------------------------------------------------------------
+
+#SSA dry
+
+corrae31data$Ba10_A11 <- as.numeric(corrae31data$Ba10_A11)
+corrae31data$Ba20_A11 <- as.numeric(corrae31data$Ba20_A11)
+corrae31data$Ba30_A11 <- as.numeric(corrae31data$Ba30_A11)
+corrae31data$Ba40_A11 <- as.numeric(corrae31data$Ba40_A11)
+corrae31data$Ba50_A11 <- as.numeric(corrae31data$Ba50_A11)
+corrae31data$Ba60_A11 <- as.numeric(corrae31data$Ba60_A11)
+corrae31data$Ba70_A11 <- as.numeric(corrae31data$Ba70_A11)
+
+corrnephdata$BsB0_S11<- as.numeric(corrnephdata$BsB0_S11)
+corrnephdata$BsG0_S11<- as.numeric(corrnephdata$BsG0_S11)
+corrnephdata$BsR0_S11<- as.numeric(corrnephdata$BsR0_S11)
+
+corrae31data$hour <- as.numeric(format(time, "%H"))
+
+# Berechnung von AAE ohne NA-Werte
+AAE1 <- -log(corrae31data$Ba10_A11/corrae31data$Ba20_A11)/log(370/470)
+AAE2 <- -log(corrae31data$Ba20_A11/corrae31data$Ba30_A11)/log(470/521)
+AAE3 <- -log(corrae31data$Ba30_A11/corrae31data$Ba40_A11)/log(521/590)
+AAE4 <- -log(corrae31data$Ba40_A11/corrae31data$Ba50_A11)/log(590/660)
+AAE5 <- -log(corrae31data$Ba50_A11/corrae31data$Ba60_A11)/log(660/880)
+AAE6 <- -log(corrae31data$Ba60_A11/corrae31data$Ba70_A11)/log(880/950)
+
+
+Abs_450 <- corrae31data$Ba10_A11*(450/470)^(-1 * AAE1)
+Abs_525 <- corrae31data$Ba40_A11*(525/590)^(-1 * AAE3)
+Abs_635 <- corrae31data$Ba50_A11*(635/660)^(-1 * AAE4)
+
+
+
+
+bextb <- Abs_450 + corrnephdata$BsB0_S11
+bextg <- Abs_525 + corrnephdata$BsG0_S11
+bextr <- Abs_635 + corrnephdata$BsR0_S11
+
+SSAdryb <- corrnephdata$BsB0_S11/bextb
+SSAdryg <- corrnephdata$BsG0_S11/bextg
+SSAdryr <- corrnephdata$BsR0_S11/bextr
+
+# Zuerst füge eine Spalte für die Stunde hinzu
+corrae31data$hour <- as.numeric(format(time, "%H"))
+
+# Dann gruppieren nach Stunde und den Durchschnitt berechnen
+hourly_avgb <- aggregate(SSAdryb, by = list(hour = corrae31data$hour), FUN = function(x) mean(x, na.rm = TRUE))
+hourly_avgg <- aggregate(SSAdryg, by = list(hour = corrae31data$hour), FUN = function(x) mean(x, na.rm = TRUE))
+hourly_avgr <- aggregate(SSAdryr, by = list(hour = corrae31data$hour), FUN = function(x) mean(x, na.rm = TRUE))
+
+# Jetzt hast du einen Dataframe mit zwei Spalten: 'hour' und 'x' (der Durchschnittswert für jede Stunde)
+
+# Plot erstellen mit angepasster y-Achse
+plot(hourly_avgb$hour, hourly_avgb$x, col = "blue", type = "l", xlab = "Stunde", ylab = "Durchschnittswert", main = "SSA dry", xaxt = "n", ylim = c(min(hourly_avgb$x, hourly_avgg$x, hourly_avgr$x), max(hourly_avgb$x, hourly_avgg$x, hourly_avgr$x)))
+lines(hourly_avgg$hour, hourly_avgg$x, col = "green")
+lines(hourly_avgr$hour, hourly_avgr$x, col = "red")
+
+# x-Achse beschriften
+axis(side = 1, at = hourly_avgb$hour, labels = paste0(hourly_avgb$hour, ":00"), las = 2, cex.axis = 0.8)
+
+
+#SSA wet: Scattering enhancement factor???
+
+#----------------------------------------------------------------------------------------------------
+# AAE 
+#----------------------------------------------------------------------------------------------------
+
+# Konvertieren der Spalten in numerische Werte
+
+# Ersetzen von NA-Werten durch geeignete Werte (z.B. 0)
+corrae31data$Ba10_A11 <- as.numeric(corrae31data$Ba10_A11)
+corrae31data$Ba20_A11 <- as.numeric(corrae31data$Ba20_A11)
+corrae31data$Ba30_A11 <- as.numeric(corrae31data$Ba30_A11)
+corrae31data$Ba40_A11 <- as.numeric(corrae31data$Ba40_A11)
+corrae31data$Ba50_A11 <- as.numeric(corrae31data$Ba50_A11)
+corrae31data$Ba60_A11 <- as.numeric(corrae31data$Ba60_A11)
+corrae31data$Ba70_A11 <- as.numeric(corrae31data$Ba70_A11)
+
+
+# Berechnung von AAE ohne NA-Werte
+AAE1 <- -log(corrae31data$Ba10_A11/corrae31data$Ba20_A11)/log(370/470)
+AAE2 <- -log(corrae31data$Ba20_A11/corrae31data$Ba30_A11)/log(470/521)
+AAE3 <- -log(corrae31data$Ba30_A11/corrae31data$Ba40_A11)/log(521/590)
+AAE4 <- -log(corrae31data$Ba40_A11/corrae31data$Ba50_A11)/log(590/660)
+AAE5 <- -log(corrae31data$Ba50_A11/corrae31data$Ba60_A11)/log(660/880)
+AAE6 <- -log(corrae31data$Ba60_A11/corrae31data$Ba70_A11)/log(880/950)
+
+
+
+hourly_avgAAE <- aggregate(SSAdryb, by = list(hour = corrae31data$hour), FUN = function(x) mean(x, na.rm = TRUE))
+
+
+# Zuerst füge eine Spalte für die Stunde hinzu
+corrae31data$hour <- as.numeric(format(time, "%H"))
+
+# Dann gruppieren nach Stunde und den Durchschnitt berechnen
+hourly_avg1 <- aggregate(AAE1, by = list(hour = corrae31data$hour), FUN = function(x) mean(x, na.rm = TRUE))
+hourly_avg2 <- aggregate(AAE2, by = list(hour = corrae31data$hour), FUN = function(x) mean(x, na.rm = TRUE))
+hourly_avg3 <- aggregate(AAE3, by = list(hour = corrae31data$hour), FUN = function(x) mean(x, na.rm = TRUE))
+hourly_avg4 <- aggregate(AAE4, by = list(hour = corrae31data$hour), FUN = function(x) mean(x, na.rm = TRUE))
+hourly_avg5 <- aggregate(AAE5, by = list(hour = corrae31data$hour), FUN = function(x) mean(x, na.rm = TRUE))
+hourly_avg6 <- aggregate(AAE6, by = list(hour = corrae31data$hour), FUN = function(x) mean(x, na.rm = TRUE))
+
+# Plot der durchschnittlichen AAE-Werte nach Stunden
+# Plot der durchschnittlichen AAE-Werte nach Stunden
+# Plot erstellen
+plot(hourly_avg1$hour, hourly_avg1$x, type = "l", col = "red", 
+     xlab = "hour", ylab = "AAE", 
+     ylim = c(0, max(hourly_avg1$x, na.rm = TRUE) * 3))
+
+# Weitere Linien hinzufügen
+lines(hourly_avg2$hour, hourly_avg2$x, type = "l", col = "blue")
+lines(hourly_avg3$hour, hourly_avg3$x, type = "l", col = "green")
+lines(hourly_avg4$hour, hourly_avg4$x, type = "l", col = "purple")
+lines(hourly_avg5$hour, hourly_avg5$x, type = "l", col = "orange")
+lines(hourly_avg6$hour, hourly_avg6$x, type = "l", col = "brown")
+
+# Legende hinzufügen
+legend("topright", legend = c("370-470 nm", "470-521 nm", "521-590 nm", "590-660 nm", "660-880 nm", "880-950 nm"), 
+       col = c("red", "blue", "green", "purple", "orange", "brown"), lty = 1)
+title("hourly averaged AAE values")
+
+# X-Achsenbeschriftung einstellen
+axis(1, at = hourly_avg1$hour, labels = hourly_avg1$hour)
+
+#----------------------------------------------------------------------------------------------------
+# backscatter fraction
+#----------------------------------------------------------------------------------------------------
+
+#Total Scattering
+corrnephdata$BsB0_S11 <- as.numeric(corrnephdata$BsB0_S11)
+corrnephdata$BsG0_S11 <- as.numeric(corrnephdata$BsG0_S11)
+corrnephdata$BsR0_S11 <- as.numeric(corrnephdata$BsR0_S11)
+
+#Backscattering
+corrnephdata$BbsB0_S11 <- as.numeric(corrnephdata$BbsB0_S11)
+corrnephdata$BbsG0_S11 <- as.numeric(corrnephdata$BbsG0_S11)
+corrnephdata$BbsR0_S11 <- as.numeric(corrnephdata$BbsR0_S11)
+
+corrae31data$hour <- as.numeric(format(time, "%H"))
+
+
+blue <- corrnephdata$BbsB0_S11/corrnephdata$BsB0_S11
+green <- corrnephdata$BbsG0_S11/corrnephdata$BsG0_S11
+red <- corrnephdata$BbsR0_S11/corrnephdata$BsR0_S11
+
+hourly_avg1 <- aggregate(blue, by = list(hour = corrae31data$hour), FUN = function(x) mean(x, na.rm = TRUE))
+hourly_avg2 <- aggregate(green, by = list(hour = corrae31data$hour), FUN = function(x) mean(x, na.rm = TRUE))
+hourly_avg3 <- aggregate(red, by = list(hour = corrae31data$hour), FUN = function(x) mean(x, na.rm = TRUE))
+
+plot(hourly_avg1$hour, hourly_avg1$x, type = "l", col = "red", 
+     xlab = "hour", ylab = "AAE", 
+     ylim = c(0, max(hourly_avg1$x, na.rm = TRUE) * 1.5))
+
+# Weitere Linien hinzufügen
+lines(hourly_avg2$hour, hourly_avg2$x, type = "l", col = "blue")
+lines(hourly_avg3$hour, hourly_avg3$x, type = "l", col = "green")
+
+
+# Legende hinzufügen
+legend("topright", legend = c("blue", "green", "red"), 
+       col = c("blue", "green", "red"), lty = 1)
+title("hourly averaged AAE values")
+
+# X-Achsenbeschriftung einstellen
+axis(1, at = hourly_avg1$hour, labels = hourly_avg1$hour)
+
+#----------------------------------------------------------------------------------------------------
+# SAE
+#----------------------------------------------------------------------------------------------------
+
+# Ersetzen von NA-Werten durch geeignete Werte (z.B. 0)
+
+corrnephdata$BsB0_S11 <- as.numeric(corrnephdata$BsB0_S11)
+corrnephdata$BsG0_S11 <- as.numeric(corrnephdata$BsG0_S11)
+corrnephdata$BsR0_S11 <- as.numeric(corrnephdata$BsR0_S11)
+
+# Berechnung von AAE ohne NA-Werte
+AAE1 <- -log(corrnephdata$BsB0_S11/corrnephdata$BsG0_S11)/log(450/525)
+AAE2 <- -log(corrnephdata$BsG0_S11/corrnephdata$BsR0_S11)/log(525/635)
+
+
+# Zuerst füge eine Spalte für die Stunde hinzu
+corrae31data$hour <- as.numeric(format(time, "%H"))
+
+# Dann gruppieren nach Stunde und den Durchschnitt berechnen
+hourly_avg1 <- aggregate(AAE1, by = list(hour = corrae31data$hour), FUN = function(x) mean(x, na.rm = TRUE))
+hourly_avg2 <- aggregate(AAE2, by = list(hour = corrae31data$hour), FUN = function(x) mean(x, na.rm = TRUE))
+
+
+# Plot der durchschnittlichen AAE-Werte nach Stunden
+# Plot der durchschnittlichen AAE-Werte nach Stunden
+# Plot erstellen
+plot(hourly_avg1$hour, hourly_avg1$x, type = "l", col = "red", 
+     xlab = "hour", ylab = "AAE", 
+     ylim = c(0, max(hourly_avg1$x, na.rm = TRUE) * 3))
+
+# Weitere Linien hinzufügen
+lines(hourly_avg2$hour, hourly_avg2$x, type = "l", col = "blue")
+
+
+# Legende hinzufügen
+legend("topright", legend = c("370-470 nm", "470-521 nm", "521-590 nm", "590-660 nm", "660-880 nm", "880-950 nm"), 
+       col = c("red", "blue", "green", "purple", "orange", "brown"), lty = 1)
+title("hourly averaged AAE values")
+
+# X-Achsenbeschriftung einstellen
+axis(1, at = hourly_avg1$hour, labels = hourly_avg1$hour)
 
 
