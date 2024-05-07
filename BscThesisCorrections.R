@@ -415,14 +415,12 @@ plot(babs, corrae31data$BaB0_, main = "Correlationplot AE31",
 # Korrelationsplot Aurora3000
 #----------------------------------------------------------------------------------------------------
 
-#Müller
-
 #STP 
 
 rawnephdata$BsB0_S11 <- as.numeric(rawnephdata$BsB0_S11)
 rawnephdata$P0_S11 <- as.numeric(rawnephdata$P0_S11)
 rawnephdata$T10_S11 <- as.numeric(rawnephdata$T10_S11)
-
+corrnephdata$BsB0_S11 <- as.numeric(corrnephdata$BsB0_S11)
 
 Pinstr <- mean(rawnephdata$P0_S11, na.rm = TRUE)
 Tinstr <- rawnephdata$T10_S11 + 273.15
@@ -456,12 +454,30 @@ tr_blue = a_blue + ang_bg * b_blue
 
 x <- rawnephdata$BsB0_S11*STP*tr_blue
 
-plot(time, corrnephdata$BsB0_S11, col = "red", type = "l", xlab = "time", ylab = "Mm-1", main = "Aurora3000")
+#plot(time, corrnephdata$BsB0_S11, col = "red", type = "l", xlab = "time", ylab = "Mm-1", main = "Aurora3000")
 
-plot(time, x, col = "blue", type = "l", xlab = "time", ylab = "Mm-1", main = "Aurora3000")
+#plot(time, x, col = "blue", type = "l", xlab = "time", ylab = "Mm-1", main = "Aurora3000")
 
+
+
+fit <- lm(corrnephdata$BsB0_S11 ~ x)
+
+# Koeffizienten abrufen
+intercept <- coef(fit)[1]
+slope <- coef(fit)[2]
+
+# Plot erstellen
 plot(x, corrnephdata$BsB0_S11, main = "Correlationplot Aurora 3000", 
-     xlab = "corrected values", ylab = "CPD output", pch = 19, col = "blue")
+     xlab = "corrected values", ylab = "CPD Output", pch = 19, col = "blue")
+
+# Regressionsgerade hinzufügen
+abline(fit, col = "red")
+
+# Funktion der Regressionsgeraden für die Legende
+legend_text <- paste("y =", round(intercept, 2), "+", round(slope, 2), "* x")
+
+# Legende hinzufügen
+legend("topright", legend = legend_text, col = "red", lty = 1, cex = 0.8)
 
 
 #----------------------------------------------------------------------------------------------------
