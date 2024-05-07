@@ -470,24 +470,48 @@ plot(x, corrnephdata$BsB0_S11, main = "Correlationplot Aurora 3000",
 
 # Zuerst füge eine Spalte für die Stunde hinzu
 corrae31data$hour <- as.numeric(format(time, "%H"))
-corrae31data$BaB0_ <- as.numeric(corrae31data$BaB0_)
-corrae31data$BaG0_ <- as.numeric(corrae31data$BaG0_)
-corrae31data$BaR0_ <- as.numeric(corrae31data$BaR0_)
+corrae31data$Ba10_A11 <- as.numeric(corrae31data$Ba10_A11)
+corrae31data$Ba20_A11 <- as.numeric(corrae31data$Ba20_A11)
+corrae31data$Ba30_A11 <- as.numeric(corrae31data$Ba30_A11)
+corrae31data$Ba40_A11 <- as.numeric(corrae31data$Ba40_A11)
+corrae31data$Ba50_A11 <- as.numeric(corrae31data$Ba50_A11)
+corrae31data$Ba60_A11 <- as.numeric(corrae31data$Ba60_A11)
+corrae31data$Ba70_A11 <- as.numeric(corrae31data$Ba70_A11)
 
 # Dann gruppieren nach Stunde und den Durchschnitt berechnen
-hourly_avgb <- aggregate(corrae31data$BaB0_, by = list(hour = corrae31data$hour), FUN = function(x) mean(x, na.rm = TRUE))
-hourly_avgg <- aggregate(corrae31data$BaG0_, by = list(hour = corrae31data$hour), FUN = function(x) mean(x, na.rm = TRUE))
-hourly_avgr <- aggregate(corrae31data$BaR0_, by = list(hour = corrae31data$hour), FUN = function(x) mean(x, na.rm = TRUE))
+hourly_avg1 <- aggregate(corrae31data$Ba10_A11, by = list(hour = corrae31data$hour), FUN = function(x) mean(x, na.rm = TRUE))
+hourly_avg2 <- aggregate(corrae31data$Ba20_A11, by = list(hour = corrae31data$hour), FUN = function(x) mean(x, na.rm = TRUE))
+hourly_avg3 <- aggregate(corrae31data$Ba30_A11, by = list(hour = corrae31data$hour), FUN = function(x) mean(x, na.rm = TRUE))
+hourly_avg4 <- aggregate(corrae31data$Ba40_A11, by = list(hour = corrae31data$hour), FUN = function(x) mean(x, na.rm = TRUE))
+hourly_avg5 <- aggregate(corrae31data$Ba50_A11, by = list(hour = corrae31data$hour), FUN = function(x) mean(x, na.rm = TRUE))
+hourly_avg6 <- aggregate(corrae31data$Ba60_A11, by = list(hour = corrae31data$hour), FUN = function(x) mean(x, na.rm = TRUE))
+hourly_avg7 <- aggregate(corrae31data$Ba70_A11, by = list(hour = corrae31data$hour), FUN = function(x) mean(x, na.rm = TRUE))
 
-# Jetzt hast du einen Dataframe mit zwei Spalten: 'hour' und 'x' (der Durchschnittswert für jede Stunde)
 
-# Plot erstellen mit angepasster y-Achse
-plot(hourly_avgb$hour, hourly_avgb$x, col = "blue", type = "l", xlab = "Stunde", ylab = "Durchschnittswert", main = "Tagesgang", xaxt = "n", ylim = c(min(hourly_avgb$x, hourly_avgg$x, hourly_avgr$x), max(hourly_avgb$x, hourly_avgg$x, hourly_avgr$x)))
-lines(hourly_avgg$hour, hourly_avgg$x, col = "green")
-lines(hourly_avgr$hour, hourly_avgr$x, col = "red")
 
-# x-Achse beschriften
-axis(side = 1, at = hourly_avg$hour, labels = paste0(hourly_avg$hour, ":00"), las = 2, cex.axis = 0.8)
+
+plot(hourly_avg1$hour, hourly_avg1$x, type = "l", col = "red", 
+     xlab = "hour", ylab = expression("Mm"^{-1}), 
+     ylim = c(0, max(hourly_avg1$x, na.rm = TRUE) * 1),
+     xaxt = "n")
+
+# Weitere Linien hinzufügen
+lines(hourly_avg2$hour, hourly_avg2$x, type = "l", col = "blue")
+lines(hourly_avg3$hour, hourly_avg3$x, type = "l", col = "green")
+lines(hourly_avg4$hour, hourly_avg4$x, type = "l", col = "purple")
+lines(hourly_avg5$hour, hourly_avg5$x, type = "l", col = "orange")
+lines(hourly_avg6$hour, hourly_avg6$x, type = "l", col = "brown")
+lines(hourly_avg7$hour, hourly_avg7$x, type = "l", col = "black")
+
+# Legende hinzufügen
+legend("topright", legend = c("370 nm", "470 nm", "521 nm", "590 nm", "660 nm", "880 nm", "950 nm"), 
+       col = c("red", "blue", "green", "purple", "orange", "brown", "black"), lty = 1)
+title("hourly averaged absorption coefficient")
+
+# X-Achsenbeschriftung einstellen
+axis(1, at = NA)
+
+axis(side = 1, at = hourly_avg1$hour, labels = paste0(hourly_avg1$hour, ":00"), las = 2, cex.axis = 0.9)
 
 
 #----------------------------------------------------------------------------------------------------
@@ -518,7 +542,7 @@ hourly_avgbr <- aggregate(corrnephdata$BbsR0_S11, by = list(hour = corrae31data$
 # Jetzt hast du einen Dataframe mit zwei Spalten: 'hour' und 'x' (der Durchschnittswert für jede Stunde)
 
 # Plot erstellen mit angepasster y-Achse
-plot(hourly_avgtb$hour, hourly_avgtb$x, col = "blue", type = "l", xlab = "Stunde", ylab = "Durchschnittswert", main = "Tagesgang", xaxt = "n", ylim = c(min(hourly_avgtb$x, hourly_avgtg$x, hourly_avgtr$x, hourly_avgbb$x, hourly_avgbg$x, hourly_avgbr$x), max(hourly_avgtb$x, hourly_avgtg$x, hourly_avgtr$x, hourly_avgbb$x, hourly_avgbg$x, hourly_avgbr$x)))
+plot(hourly_avgtb$hour, hourly_avgtb$x, col = "blue", type = "l", xlab = "hour", ylab = expression("Mm"^{-1}), main = "hourly averaged scattering coefficient", xaxt = "n", ylim = c(min(hourly_avgtb$x, hourly_avgtg$x, hourly_avgtr$x, hourly_avgbb$x, hourly_avgbg$x, hourly_avgbr$x), max(hourly_avgtb$x, hourly_avgtg$x, hourly_avgtr$x, hourly_avgbb$x, hourly_avgbg$x, hourly_avgbr$x)))
 lines(hourly_avgtg$hour, hourly_avgtg$x, col = "green")
 lines(hourly_avgtr$hour, hourly_avgtr$x, col = "red")
 
@@ -527,8 +551,11 @@ lines(hourly_avgbg$hour, hourly_avgbg$x, col = "green")
 lines(hourly_avgbr$hour, hourly_avgbr$x, col = "red")
 
 # x-Achse beschriften
-axis(side = 1, at = hourly_avg$hour, labels = paste0(hourly_avg$hour, ":00"), las = 2, cex.axis = 0.8)
+axis(side = 1, at = hourly_avgtb$hour, labels = paste0(hourly_avgtb$hour, ":00"), las = 2, cex.axis = 0.9)
 
+# Legende hinzufügen
+legend("topright", legend = c("BsB0_S11", "BsG0_S11", "BsR0_S11", "BbsB0_S11", "BbsG0_S11", "BbsR0_S11"), 
+       col = c("blue", "green", "red", "blue", "green", "red"), lty = 1, title.col = "black", cex = 0.8)
 #----------------------------------------------------------------------------------------------------
 # SSA | Vietnam
 #----------------------------------------------------------------------------------------------------
@@ -563,8 +590,6 @@ Abs_525 <- corrae31data$Ba40_A11*(525/590)^(-1 * AAE3)
 Abs_635 <- corrae31data$Ba50_A11*(635/660)^(-1 * AAE4)
 
 
-
-
 bextb <- Abs_450 + corrnephdata$BsB0_S11
 bextg <- Abs_525 + corrnephdata$BsG0_S11
 bextr <- Abs_635 + corrnephdata$BsR0_S11
@@ -584,15 +609,15 @@ hourly_avgr <- aggregate(SSAdryr, by = list(hour = corrae31data$hour), FUN = fun
 # Jetzt hast du einen Dataframe mit zwei Spalten: 'hour' und 'x' (der Durchschnittswert für jede Stunde)
 
 # Plot erstellen mit angepasster y-Achse
-plot(hourly_avgb$hour, hourly_avgb$x, col = "blue", type = "l", xlab = "Stunde", ylab = "Durchschnittswert", main = "SSA dry", xaxt = "n", ylim = c(min(hourly_avgb$x, hourly_avgg$x, hourly_avgr$x), max(hourly_avgb$x, hourly_avgg$x, hourly_avgr$x)))
+plot(hourly_avgb$hour, hourly_avgb$x, col = "blue", type = "l", xlab = "hour", ylab = "SSA dry", main = "hourly averaged SSA dry values", xaxt = "n", ylim = c(min(hourly_avgb$x, hourly_avgg$x, hourly_avgr$x), max(hourly_avgb$x, hourly_avgg$x, hourly_avgr$x)))
 lines(hourly_avgg$hour, hourly_avgg$x, col = "green")
 lines(hourly_avgr$hour, hourly_avgr$x, col = "red")
 
 # x-Achse beschriften
-axis(side = 1, at = hourly_avgb$hour, labels = paste0(hourly_avgb$hour, ":00"), las = 2, cex.axis = 0.8)
+axis(side = 1, at = hourly_avgb$hour, labels = paste0(hourly_avgb$hour, ":00"), las = 2, cex.axis = 0.9)
 
 
-#SSA wet: Scattering enhancement factor???
+
 
 #----------------------------------------------------------------------------------------------------
 # AAE 
@@ -620,9 +645,6 @@ AAE6 <- -log(corrae31data$Ba60_A11/corrae31data$Ba70_A11)/log(880/950)
 
 
 
-hourly_avgAAE <- aggregate(SSAdryb, by = list(hour = corrae31data$hour), FUN = function(x) mean(x, na.rm = TRUE))
-
-
 # Zuerst füge eine Spalte für die Stunde hinzu
 corrae31data$hour <- as.numeric(format(time, "%H"))
 
@@ -639,7 +661,8 @@ hourly_avg6 <- aggregate(AAE6, by = list(hour = corrae31data$hour), FUN = functi
 # Plot erstellen
 plot(hourly_avg1$hour, hourly_avg1$x, type = "l", col = "red", 
      xlab = "hour", ylab = "AAE", 
-     ylim = c(0, max(hourly_avg1$x, na.rm = TRUE) * 3))
+     ylim = c(0, max(hourly_avg1$x, na.rm = TRUE) * 3),
+     xaxt = "n")
 
 # Weitere Linien hinzufügen
 lines(hourly_avg2$hour, hourly_avg2$x, type = "l", col = "blue")
@@ -654,7 +677,10 @@ legend("topright", legend = c("370-470 nm", "470-521 nm", "521-590 nm", "590-660
 title("hourly averaged AAE values")
 
 # X-Achsenbeschriftung einstellen
-axis(1, at = hourly_avg1$hour, labels = hourly_avg1$hour)
+axis(1, at = NA)
+
+axis(side = 1, at = hourly_avg1$hour, labels = paste0(hourly_avg1$hour, ":00"), las = 2, cex.axis = 0.9)
+
 
 #----------------------------------------------------------------------------------------------------
 # backscatter fraction
@@ -682,9 +708,9 @@ hourly_avg2 <- aggregate(green, by = list(hour = corrae31data$hour), FUN = funct
 hourly_avg3 <- aggregate(red, by = list(hour = corrae31data$hour), FUN = function(x) mean(x, na.rm = TRUE))
 
 plot(hourly_avg1$hour, hourly_avg1$x, type = "l", col = "red", 
-     xlab = "hour", ylab = "AAE", 
-     ylim = c(0, max(hourly_avg1$x, na.rm = TRUE) * 1.5))
-
+     xlab = "hour", ylab = "b", 
+     ylim = c(0, max(hourly_avg1$x, na.rm = TRUE) * 1.5),
+     xaxt = "n")
 # Weitere Linien hinzufügen
 lines(hourly_avg2$hour, hourly_avg2$x, type = "l", col = "blue")
 lines(hourly_avg3$hour, hourly_avg3$x, type = "l", col = "green")
@@ -693,10 +719,13 @@ lines(hourly_avg3$hour, hourly_avg3$x, type = "l", col = "green")
 # Legende hinzufügen
 legend("topright", legend = c("blue", "green", "red"), 
        col = c("blue", "green", "red"), lty = 1)
-title("hourly averaged AAE values")
+title("hourly averaged backscatter fraction")
 
 # X-Achsenbeschriftung einstellen
-axis(1, at = hourly_avg1$hour, labels = hourly_avg1$hour)
+axis(1, at = NA)
+
+axis(side = 1, at = hourly_avg1$hour, labels = paste0(hourly_avg1$hour, ":00"), las = 2, cex.axis = 0.9)
+
 
 #----------------------------------------------------------------------------------------------------
 # SAE
@@ -725,19 +754,19 @@ hourly_avg2 <- aggregate(AAE2, by = list(hour = corrae31data$hour), FUN = functi
 # Plot der durchschnittlichen AAE-Werte nach Stunden
 # Plot erstellen
 plot(hourly_avg1$hour, hourly_avg1$x, type = "l", col = "red", 
-     xlab = "hour", ylab = "AAE", 
-     ylim = c(0, max(hourly_avg1$x, na.rm = TRUE) * 3))
+     xlab = "hour", ylab = "SAE", 
+     ylim = c(0, max(hourly_avg1$x, na.rm = TRUE) * 1.5), xaxt = "n")
 
 # Weitere Linien hinzufügen
 lines(hourly_avg2$hour, hourly_avg2$x, type = "l", col = "blue")
 
 
 # Legende hinzufügen
-legend("topright", legend = c("370-470 nm", "470-521 nm", "521-590 nm", "590-660 nm", "660-880 nm", "880-950 nm"), 
-       col = c("red", "blue", "green", "purple", "orange", "brown"), lty = 1)
-title("hourly averaged AAE values")
+legend("topright", legend = c("450-525 nm", "525-635 nm"), 
+       col = c("red", "blue"), lty = 1)
+title("hourly averaged SAE values")
 
 # X-Achsenbeschriftung einstellen
-axis(1, at = hourly_avg1$hour, labels = hourly_avg1$hour)
+axis(side = 1, at = hourly_avg1$hour, labels = paste0(hourly_avg1$hour, ":00"), las = 2, cex.axis = 0.9)
 
 

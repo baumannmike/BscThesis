@@ -90,7 +90,7 @@ rawnephdata$BsB0_S11 <- as.numeric(rawnephdata$BsB0_S11)
 rawnephdata$P0_S11 <- as.numeric(rawnephdata$P0_S11)
 rawnephdata$T10_S11 <- as.numeric(rawnephdata$T10_S11)
 rawae31data$X1c0_A11 <- as.numeric(rawae31data$X1c0_A11)
-
+corrae31data$BaB0_ <- as.numeric(corrae31data$BaB0_)
 
 # STP correction
 Pinstr <- mean(rawnephdata$P0_S11, na.rm = TRUE)
@@ -116,13 +116,22 @@ plot(time, corrae31data$BaB0_, col = "red", type = "l", xlab = "time", ylab = "M
 # Correlationplot
 # Plot erstellen
 plot(babs, corrae31data$BaB0_, main = "Correlationplot AE31", 
-     xlab = "korrigierte Werte", ylab = "CPD-Ausgabe", pch = 19, col = "blue")
+     xlab = "korrigierte Werte", ylab = "CPD Output", pch = 19, col = "blue")
 
 # Regressionsgerade hinzufügen
 abline(lm(corrae31data$BaB0_ ~ babs), col = "red")
 
+fit <- lm(corrae31data$BaB0_ ~ babs)
+
+# Koeffizienten abrufen
+intercept <- coef(fit)[1]
+slope <- coef(fit)[2]
+
+# Funktion der Regressionsgeraden anzeigen
+cat("Funktion der Regressionsgeraden: BaB0 = ", intercept, " + ", slope, " * babs")
+
+legend_text <- paste("BaB0 =", round(intercept, 2), "+", round(slope, 2), "x")
+
 # Legende hinzufügen
-legend("topright", legend = "Regressionsgerade", col = "red", lty = 1, cex = 0.8)
-
-
+legend("topright", legend = legend_text, col = "red", lty = 1, cex = 0.8)
 
