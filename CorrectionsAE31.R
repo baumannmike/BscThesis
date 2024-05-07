@@ -116,7 +116,7 @@ plot(time, corrae31data$BaB0_, col = "red", type = "l", xlab = "time", ylab = "M
 # Correlationplot
 # Plot erstellen
 plot(babs, corrae31data$BaB0_, main = "Correlationplot AE31", 
-     xlab = "korrigierte Werte", ylab = "CPD Output", pch = 19, col = "blue")
+     xlab = "corrected Values", ylab = "CPD Output", pch = 19, col = "blue")
 
 # Regressionsgerade hinzufügen
 abline(lm(corrae31data$BaB0_ ~ babs), col = "red")
