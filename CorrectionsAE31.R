@@ -127,10 +127,7 @@ fit <- lm(corrae31data$BaB0_ ~ babs)
 intercept <- coef(fit)[1]
 slope <- coef(fit)[2]
 
-# Funktion der Regressionsgeraden anzeigen
-cat("Funktion der Regressionsgeraden: BaB0 = ", intercept, " + ", slope, " * babs")
-
-legend_text <- paste("BaB0 =", round(intercept, 2), "+", round(slope, 2), "x")
+legend_text <- paste("y =", round(intercept, 2), "+", round(slope, 2), "x")
 
 # Legende hinzufügen
 legend("topright", legend = legend_text, col = "red", lty = 1, cex = 0.8)
