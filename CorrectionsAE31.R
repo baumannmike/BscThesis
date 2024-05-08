@@ -93,8 +93,8 @@ rawae31data$X1c0_A11 <- as.numeric(rawae31data$X1c0_A11)
 corrae31data$BaB0_ <- as.numeric(corrae31data$BaB0_)
 
 # STP correction
-Pinstr <- 960 #mean(rawnephdata$P0_S11, na.rm = TRUE)
-Tinstr <- rawnephdata$T10_S11 + 273.15
+Pinstr <- 650 #mean(rawnephdata$P0_S11, na.rm = TRUE)
+Tinstr <- 20 + 273.15#rawnephdata$T10_S11 + 273.15
 Pstp <- 1013.25
 Tstp <- 273.15
 
@@ -105,10 +105,10 @@ STP <- (Pstp * Tinstr)/(Pinstr * Tstp)
 data.batn370  <- 1e-3 * rawae31data$X1c0_A11 * 39.5
 
 #Apply Weingartner and STP
-babs <- (data.batn370/3.5)*STP
+babs <- (data.batn370/3.5)
 
 # Plot korrigierte Werte
-plot(time, babs, col = "blue", type = "l", xlab = "time", ylab = "Mm-1")
+plot(time, WG1, col = "blue", type = "l", xlab = "time", ylab = "Mm-1")
 
 # Plot CPD output
 plot(time, corrae31data$BaB0_, col = "red", type = "l", xlab = "time", ylab = "Mm-1")
