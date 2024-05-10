@@ -12,7 +12,7 @@ corrnephdata <- read.csv(ncorrected)
 time <- as.POSIXct(corrae31data$DateTimeUTC, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
 
 #################################################################################################################################
-# 
+# Monthly AE31
 #################################################################################################################################
 
 corrae31data$hour <- as.numeric(format(time, "%m"))
@@ -35,7 +35,7 @@ hourly_avg7 <- aggregate(corrae31data$Ba70_A11, by = list(hour = corrae31data$ho
 
 
 plot(hourly_avg1$hour, hourly_avg1$x, type = "l", col = "red", 
-     xlab = "", ylab = expression("Mm"^{-1}), 
+     xlab = "", ylab = expression("Absorption Coefficent [Mm"^-1*"]"), 
      ylim = c(0, max(hourly_avg1$x, na.rm = TRUE) * 1),
      xaxt = "n")
 
@@ -50,7 +50,7 @@ lines(hourly_avg7$hour, hourly_avg7$x, type = "l", col = "brown")
 # Legende hinzufügen
 legend("topright", legend = c("370 nm", "470 nm", "521 nm", "590 nm", "660 nm", "880 nm", "950 nm"), 
        col = c("red", "orange", "yellow", "green", "blue", "purple", "brown"), lty = 1)
-title("monthly averaged absorption coefficient")
+title("monthly averaged absorption coefficent")
 
 # X-Achsenbeschriftung einstellen
 axis(1, at = NA)
@@ -61,6 +61,45 @@ month_to_name <- function(month_num) {
 }
 
 axis(side = 1, at = unique(corrae31data$hour), labels = month_to_name(unique(corrae31data$hour)), las = 2, cex.axis = 0.9)
+
+#################################################################################################################################
+# Yearly Absorption
+#################################################################################################################################
+
+# Zuerst füge eine Spalte für die Stunde hinzu
+corrae31data$hour <- as.numeric(format(time, "%Y"))
+
+time <- as.POSIXct(corrae31data$DateTimeUTC, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
+corrae31data$Ba10_A11 <- as.numeric(corrae31data$Ba10_A11)
+corrae31data$Ba20_A11 <- as.numeric(corrae31data$Ba20_A11)
+corrae31data$Ba30_A11 <- as.numeric(corrae31data$Ba30_A11)
+corrae31data$Ba40_A11 <- as.numeric(corrae31data$Ba40_A11)
+corrae31data$Ba50_A11 <- as.numeric(corrae31data$Ba50_A11)
+corrae31data$Ba60_A11 <- as.numeric(corrae31data$Ba60_A11)
+corrae31data$Ba70_A11 <- as.numeric(corrae31data$Ba70_A11)
+
+
+
+
+plot(time, corrae31data$Ba10_A11, type = "l", col = "red", 
+     xlab = "time", ylab = expression("Absorption Coefficent [Mm"^-1*"]")) 
+     
+
+
+# Weitere Linien hinzufügen
+lines(time, corrae31data$Ba20_A11, type = "l", col = "orange")
+lines(time, corrae31data$Ba30_A11, type = "l", col = "yellow")
+lines(time, corrae31data$Ba40_A11, type = "l", col = "green")
+lines(time, corrae31data$Ba50_A11, type = "l", col = "blue")
+lines(time, corrae31data$Ba60_A11, type = "l", col = "purple")
+lines(time, corrae31data$Ba70_A11, type = "l", col = "brown")
+
+# Legende hinzufügen
+legend("topright", legend = c("370 nm", "470 nm", "521 nm", "590 nm", "660 nm", "880 nm", "950 nm"), 
+       col = c("red", "orange", "yellow", "green", "blue", "purple", "brown"), lty = 1)
+title("absorption coefficent")
+
+
 
 #################################################################################################################################
 # Daily Absorption
@@ -104,7 +143,7 @@ lines(hourly_avg7$hour, hourly_avg7$x, type = "l", col = "brown")
 # Legende hinzufügen
 legend("topright", legend = c("370 nm", "470 nm", "521 nm", "590 nm", "660 nm", "880 nm", "950 nm"), 
        col = c("red", "orange", "yellow", "green", "blue", "purple", "brown"), lty = 1)
-title("hourly averaged absorption coefficient")
+title("hourly averaged absorption coefficent")
 
 # X-Achsenbeschriftung einstellen
 axis(1, at = NA)
@@ -135,7 +174,7 @@ boxplot(corrae31data$Ba10_A11 ~ corrae31data$hour,
 
 
 
-
+library(gglpot)
 
 # Erstelle den Boxplot ohne Ausreißer
 
@@ -167,6 +206,24 @@ Tinstr <- mean((corrnephdata$T10_S11 + 273.15), na.rm=TRUE)
 #################################################################################################################################
 # Daily Aurora3000
 #################################################################################################################################
+corrae31data$hour <- as.numeric(format(time, "%H"))
+corrnephdata$BsB0_S11 <- as.numeric(corrnephdata$BsB0_S11)
+corrnephdata$BsG0_S11 <- as.numeric(corrnephdata$BsG0_S11)
+corrnephdata$BsR0_S11 <- as.numeric(corrnephdata$BsR0_S11)
+
+corrnephdata$BbsB0_S11 <- as.numeric(corrnephdata$BbsB0_S11)
+corrnephdata$BbsG0_S11 <- as.numeric(corrnephdata$BbsG0_S11)
+corrnephdata$BbsR0_S11 <- as.numeric(corrnephdata$BbsR0_S11)
+time <- as.POSIXct(corrnephdata$DateTimeUTC, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
+corrnephdata$hour <- as.numeric(format(time, "%H"))
+
+hourly_avgtb <- aggregate(corrnephdata$BsB0_S11, by = list(hour = corrnephdata$hour), FUN = function(x) mean(x, na.rm = TRUE))
+hourly_avgtg <- aggregate(corrnephdata$BsG0_S11, by = list(hour = corrnephdata$hour), FUN = function(x) mean(x, na.rm = TRUE))
+hourly_avgtr <- aggregate(corrnephdata$BsR0_S11, by = list(hour = corrnephdata$hour), FUN = function(x) mean(x, na.rm = TRUE))
+
+hourly_avgbb <- aggregate(corrnephdata$BbsB0_S11, by = list(hour = corrnephdata$hour), FUN = function(x) mean(x, na.rm = TRUE))
+hourly_avgbg <- aggregate(corrnephdata$BbsG0_S11, by = list(hour = corrnephdata$hour), FUN = function(x) mean(x, na.rm = TRUE))
+hourly_avgbr <- aggregate(corrnephdata$BbsR0_S11, by = list(hour = corrnephdata$hour), FUN = function(x) mean(x, na.rm = TRUE))
 
 
 par(oma = c(0, 0, 0, 0))
@@ -177,7 +234,7 @@ par(mfrow = c(2, 1), mar = c(3, 5, 2, 2) + 0.1)
 # Erster Plot mit den ersten drei Linien
 plot(hourly_avgtb$hour, hourly_avgtb$x, col = "blue", type = "l", 
      xlab = "", ylab = expression(paste(sigma[TS], " [Mm"^-1*"]")), 
-     main = "hourly averaged scattering coefficient", 
+     main = "hourly averaged scattering coefficent", 
      xaxt = "n", 
      ylim = c(min(hourly_avgtb$x, hourly_avgtg$x, hourly_avgtr$x), 
               max(hourly_avgtb$x, hourly_avgtg$x, hourly_avgtr$x)))
@@ -196,6 +253,46 @@ lines(hourly_avgbr$hour, hourly_avgbr$x, col = "red")
 legend("topright", legend = c("450 nm", "525 nm", "635 nm"), col = c("blue", "green", "red"), lty = 1)
 
 axis(side = 1, at = hourly_avgtb$hour, labels = paste0(hourly_avgtb$hour, ":00"), las = 2, cex.axis = 0.9)
+
+#################################################################################################################################
+# Aurora3000 year
+#################################################################################################################################
+
+
+corrnephdata$BsB0_S11 <- as.numeric(corrnephdata$BsB0_S11)
+corrnephdata$BsG0_S11 <- as.numeric(corrnephdata$BsG0_S11)
+corrnephdata$BsR0_S11 <- as.numeric(corrnephdata$BsR0_S11)
+
+corrnephdata$BbsB0_S11 <- as.numeric(corrnephdata$BbsB0_S11)
+corrnephdata$BbsG0_S11 <- as.numeric(corrnephdata$BbsG0_S11)
+corrnephdata$BbsR0_S11 <- as.numeric(corrnephdata$BbsR0_S11)
+time <- as.POSIXct(corrnephdata$DateTimeUTC, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
+
+
+
+
+par(oma = c(0, 0, 0, 0))
+
+# Teilt das Grafikfenster in 2 Reihen und 1 Spalte auf
+par(mfrow = c(2, 1), mar = c(3, 5, 2, 2) + 0.1)
+
+# Erster Plot mit den ersten drei Linien
+plot(time, corrnephdata$BsB0_S11, col = "blue", type = "l", 
+     xlab = "", ylab = expression(paste(sigma[TS], " [Mm"^-1*"]")), 
+     main = "scattering coefficent")
+lines(time, corrnephdata$BsG0_S11, col = "green")
+lines(time, corrnephdata$BsR0_S11, col = "red")
+
+
+# Zweiter Plot mit den letzten drei Linien
+plot(time, corrnephdata$BbsB0_S11, col = "blue", type = "l", 
+     xlab = "hour", ylab = expression(paste(sigma[BS], " [Mm"^-1*"]")))
+lines(time, corrnephdata$BbsG0_S11, col = "green")
+lines(time, corrnephdata$BbsR0_S11, col = "red")
+legend("topright", legend = c("450 nm", "525 nm", "635 nm"), col = c("blue", "green", "red"), lty = 1)
+
+
+
 
 #################################################################################################################################
 # AAE
@@ -247,6 +344,42 @@ axis(1, at = NA)
 axis(side = 1, at = hourly_avg1$hour, labels = paste0(hourly_avg1$hour, ":00"), las = 2, cex.axis = 0.9)
 
 #################################################################################################################################
+# AAE yearly
+#################################################################################################################################
+
+
+# Konvertieren der Spalten in numerische Werte
+
+time <- as.POSIXct(corrae31data$DateTimeUTC, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
+corrae31data$Ba10_A11 <- as.numeric(corrae31data$Ba10_A11)
+corrae31data$Ba20_A11 <- as.numeric(corrae31data$Ba20_A11)
+corrae31data$Ba30_A11 <- as.numeric(corrae31data$Ba30_A11)
+corrae31data$Ba40_A11 <- as.numeric(corrae31data$Ba40_A11)
+corrae31data$Ba50_A11 <- as.numeric(corrae31data$Ba50_A11)
+corrae31data$Ba60_A11 <- as.numeric(corrae31data$Ba60_A11)
+corrae31data$Ba70_A11 <- as.numeric(corrae31data$Ba70_A11)
+
+
+# Berechnung von AAE ohne NA-Werte
+
+AAE1 <- -log(corrae31data$Ba20_A11/corrae31data$Ba60_A11)/log(470/880)
+
+
+
+# Plot der durchschnittlichen AAE-Werte nach Stunden
+# Plot erstellen
+plot(time, AAE1, type = "l", col = "black", 
+     xlab = "time", ylab = "AAE")
+
+
+# Legende hinzufügen
+title("AAE [470-880 nm]")
+
+# X-Achsenbeschriftung einstellen
+
+
+
+#################################################################################################################################
 # SAE
 #################################################################################################################################
 
@@ -254,7 +387,7 @@ corrnephdata$BsB0_S11 <- as.numeric(corrnephdata$BsB0_S11)
 corrnephdata$BsG0_S11 <- as.numeric(corrnephdata$BsG0_S11)
 corrnephdata$BsR0_S11 <- as.numeric(corrnephdata$BsR0_S11)
 time <- as.POSIXct(corrnephdata$DateTimeUTC, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
-corrnephdata$hour <- as.numeric(format(time, "%H"))
+
 
 # Berechnung von AAE ohne NA-Werte
 AAE1 <- -log(corrnephdata$BsB0_S11/corrnephdata$BsR0_S11)/log(450/635)
@@ -262,24 +395,17 @@ AAE1 <- -log(corrnephdata$BsB0_S11/corrnephdata$BsR0_S11)/log(450/635)
 # Zuerst füge eine Spalte für die Stunde hinzu
 
 
-# Dann gruppieren nach Stunde und den Durchschnitt berechnen
-hourly_avg1 <- aggregate(AAE1, 
-                         by = list(hour = corrnephdata$hour), 
-                         FUN = median , na.rm = TRUE)
-
 
 # Plot erstellen
-plot(hourly_avg1$hour, hourly_avg1$x, type = "l", col = "black", 
-     xlab = "hour", ylab = "SAE", 
-     ylim = c(0, max(hourly_avg1$x, na.rm = TRUE) * 1.5), xaxt = "n")
+plot(time, AAE1, type = "l", col = "black", 
+     xlab = "time", ylab = "SAE")
 
 
 
 # Legende hinzufügen
-title("hourly median SAE values [450-635 nm]")
+title("SAE [450-635 nm]")
 
-# X-Achsenbeschriftung einstellen
-axis(side = 1, at = hourly_avg1$hour, labels = paste0(hourly_avg1$hour, ":00"), las = 2, cex.axis = 0.9)
+
 
 #################################################################################################################################
 # backsacatter fraction
@@ -306,13 +432,13 @@ hourly_avg1 <- aggregate(blue, by = list(hour = corrnephdata$hour), FUN = functi
 hourly_avg2 <- aggregate(green, by = list(hour = corrnephdata$hour), FUN = function(x) median(x, na.rm = TRUE))
 hourly_avg3 <- aggregate(red, by = list(hour = corrnephdata$hour), FUN = function(x) median(x, na.rm = TRUE))
 
-plot(hourly_avg1$hour, hourly_avg1$x, type = "l", col = "red", 
+plot(hourly_avg1$hour, hourly_avg1$x, type = "l", col = "blue", 
      xlab = "hour", ylab = "b", 
      ylim = c(0, max(hourly_avg1$x, na.rm = TRUE) * 1.5),
      xaxt = "n")
 # Weitere Linien hinzufügen
-lines(hourly_avg2$hour, hourly_avg2$x, type = "l", col = "blue")
-lines(hourly_avg3$hour, hourly_avg3$x, type = "l", col = "green")
+lines(hourly_avg2$hour, hourly_avg2$x, type = "l", col = "green")
+lines(hourly_avg3$hour, hourly_avg3$x, type = "l", col = "red")
 
 
 # Legende hinzufügen
@@ -324,6 +450,40 @@ title("hourly median backscatter fraction ")
 axis(1, at = NA)
 
 axis(side = 1, at = hourly_avg1$hour, labels = paste0(hourly_avg1$hour, ":00"), las = 2, cex.axis = 0.9)
+
+#################################################################################################################################
+# backsacatter fraction
+#################################################################################################################################
+
+#Total Scattering
+corrnephdata$BsB0_S11 <- as.numeric(corrnephdata$BsB0_S11)
+corrnephdata$BsG0_S11 <- as.numeric(corrnephdata$BsG0_S11)
+corrnephdata$BsR0_S11 <- as.numeric(corrnephdata$BsR0_S11)
+
+#Backscattering
+corrnephdata$BbsB0_S11 <- as.numeric(corrnephdata$BbsB0_S11)
+corrnephdata$BbsG0_S11 <- as.numeric(corrnephdata$BbsG0_S11)
+corrnephdata$BbsR0_S11 <- as.numeric(corrnephdata$BbsR0_S11)
+time <- as.POSIXct(corrnephdata$DateTimeUTC, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
+
+
+blue <- corrnephdata$BbsB0_S11/corrnephdata$BsB0_S11
+green <- corrnephdata$BbsG0_S11/corrnephdata$BsG0_S11
+red <- corrnephdata$BbsR0_S11/corrnephdata$BsR0_S11
+
+plot(time, blue, type = "l", col = "blue", 
+     xlab = "time", ylab = "b")
+# Weitere Linien hinzufügen
+lines(time, green, type = "l", col = "green")
+lines(time, red, type = "l", col = "red")
+
+
+# Legende hinzufügen
+legend("topright", legend = c("450 nm", "525 nm", "635 nm"), 
+       col = c("blue", "green", "red"), lty = 1)
+title("backscatter fraction ")
+
+
 
 #################################################################################################################################
 # SSA dry
@@ -385,6 +545,63 @@ lines(hourly_avgr$hour, hourly_avgr$x, col = "red")
 
 # x-Achse beschriften
 axis(side = 1, at = hourly_avgb$hour, labels = paste0(hourly_avgb$hour, ":00"), las = 2, cex.axis = 0.9)
+legend("topright", legend = c("450 nm", "525 nm", "635 nm"), 
+       col = c("blue", "green", "red"), lty = 1)
+
+#################################################################################################################################
+# SSA dry
+#################################################################################################################################
+
+corrae31data$Ba10_A11 <- as.numeric(corrae31data$Ba10_A11)
+corrae31data$Ba20_A11 <- as.numeric(corrae31data$Ba20_A11)
+corrae31data$Ba30_A11 <- as.numeric(corrae31data$Ba30_A11)
+corrae31data$Ba40_A11 <- as.numeric(corrae31data$Ba40_A11)
+corrae31data$Ba50_A11 <- as.numeric(corrae31data$Ba50_A11)
+corrae31data$Ba60_A11 <- as.numeric(corrae31data$Ba60_A11)
+corrae31data$Ba70_A11 <- as.numeric(corrae31data$Ba70_A11)
+
+corrnephdata$BsB0_S11<- as.numeric(corrnephdata$BsB0_S11)
+corrnephdata$BsG0_S11<- as.numeric(corrnephdata$BsG0_S11)
+corrnephdata$BsR0_S11<- as.numeric(corrnephdata$BsR0_S11)
+
+time <- as.POSIXct(corrae31data$DateTimeUTC, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
+
+# Berechnung von AAE ohne NA-Werte
+
+AAE1 <- -log(corrae31data$Ba20_A11/corrae31data$Ba60_A11)/log(470/880)
+
+Abs_450 <- corrae31data$Ba10_A11*(450/470)^(-1 * AAE1)
+Abs_525 <- corrae31data$Ba40_A11*(525/590)^(-1 * AAE1)
+Abs_635 <- corrae31data$Ba50_A11*(635/660)^(-1 * AAE1)
+
+
+time <- as.POSIXct(corrae31data$DateTimeUTC, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
+time2 <- as.POSIXct(corrnephdata$DateTimeUTC, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
+
+time2_not_in_time <- time2[!time2 %in% time]
+
+merged_data <- merge(corrae31data, corrnephdata, by = "DateTimeUTC", all.x = TRUE)
+
+bextb <- Abs_450 + merged_data$BsB0_S11
+bextg <- Abs_525 + merged_data$BsG0_S11
+bextr <- Abs_635 + merged_data$BsR0_S11
+
+SSAdryb <- merged_data$BsB0_S11/bextb
+SSAdryg <- merged_data$BsG0_S11/bextg
+SSAdryr <- merged_data$BsR0_S11/bextr
+
+# Zuerst füge eine Spalte für die Stunde hinzu
+merged_data$hour <- as.numeric(format(time, "%H"))
+
+# Plot erstellen mit angepasster y-Achse
+plot(time, SSAdryb, col = "blue", type = "l", xlab = "time", ylab = "SSA dry", main = "SSA dry")
+lines(time, SSAdryg, col = "green")
+lines(time, SSAdryr, col = "red")
+
+# x-Achse beschriften
+
+legend("topright", legend = c("450 nm", "525 nm", "635 nm"), 
+       col = c("blue", "green", "red"), lty = 1)
 
 
 
