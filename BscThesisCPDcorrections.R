@@ -12,6 +12,124 @@ corrnephdata <- read.csv(ncorrected)
 time <- as.POSIXct(corrae31data$DateTimeUTC, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
 
 #################################################################################################################################
+# Monthly AE31 for every year Box
+#################################################################################################################################
+
+time <- as.POSIXct(corrae31data$DateTimeUTC, format = "%Y-%m-%d %H:%M:%S", tz = "UTC")
+year <- format(time, "%Y")
+data_2019 <- corrae31data[year == "2019", ]
+data_2020 <- corrae31data[year == "2020", ]
+data_2021 <- corrae31data[year == "2021", ]
+data_2022 <- corrae31data[year == "2022", ]
+data_2023 <- corrae31data[year == "2023", ]
+data_2024 <- corrae31data[year == "2024", ]
+
+data_2019$Ba30_A11 <- as.numeric(data_2019$Ba30_A11)
+data_2020$Ba30_A11 <- as.numeric(data_2020$Ba30_A11)
+data_2021$Ba30_A11 <- as.numeric(data_2021$Ba30_A11)
+data_2022$Ba30_A11 <- as.numeric(data_2022$Ba30_A11)
+data_2023$Ba30_A11 <- as.numeric(data_2023$Ba30_A11)
+data_2024$Ba30_A11 <- as.numeric(data_2024$Ba30_A11)
+
+data_2019$month <- format(as.POSIXct(data_2019$DateTimeUTC, format = "%Y-%m-%d %H:%M:%S", tz = "UTC"), "%m")
+data_2020$month <- format(as.POSIXct(data_2020$DateTimeUTC, format = "%Y-%m-%d %H:%M:%S", tz = "UTC"), "%m")
+data_2021$month <- format(as.POSIXct(data_2021$DateTimeUTC, format = "%Y-%m-%d %H:%M:%S", tz = "UTC"), "%m")
+data_2022$month <- format(as.POSIXct(data_2022$DateTimeUTC, format = "%Y-%m-%d %H:%M:%S", tz = "UTC"), "%m")
+data_2023$month <- format(as.POSIXct(data_2023$DateTimeUTC, format = "%Y-%m-%d %H:%M:%S", tz = "UTC"), "%m")
+data_2024$month <- format(as.POSIXct(data_2024$DateTimeUTC, format = "%Y-%m-%d %H:%M:%S", tz = "UTC"), "%m")
+
+
+monthly_avg1 <- aggregate(data_2019$Ba30_A11, by = list(month = data_2019$month), FUN = function(x) mean(x, na.rm = TRUE))
+monthly_sd1 <- aggregate(data_2019$Ba30_A11, by = list(month = data_2019$month), FUN = function(x) sd(x, na.rm = TRUE))
+
+monthly_avg2 <- aggregate(data_2020$Ba30_A11, by = list(month = data_2020$month), FUN = function(x) mean(x, na.rm = TRUE))
+monthly_sd2 <- aggregate(data_2020$Ba30_A11, by = list(month = data_2020$month), FUN = function(x) sd(x, na.rm = TRUE))
+
+monthly_avg2 <- aggregate(data_2021$Ba30_A11, by = list(month = data_2021$month), FUN = function(x) mean(x, na.rm = TRUE))
+monthly_sd2 <- aggregate(data_2021$Ba30_A11, by = list(month = data_2021$month), FUN = function(x) sd(x, na.rm = TRUE))
+
+monthly_avg2 <- aggregate(data_2022$Ba30_A11, by = list(month = data_2022$month), FUN = function(x) mean(x, na.rm = TRUE))
+monthly_sd2 <- aggregate(data_2022$Ba30_A11, by = list(month = data_2022$month), FUN = function(x) sd(x, na.rm = TRUE))
+
+monthly_avg2 <- aggregate(data_2023$Ba30_A11, by = list(month = data_2023$month), FUN = function(x) mean(x, na.rm = TRUE))
+monthly_sd2 <- aggregate(data_2023$Ba30_A11, by = list(month = data_2023$month), FUN = function(x) sd(x, na.rm = TRUE))
+
+monthly_avg2 <- aggregate(data_2024$Ba30_A11, by = list(month = data_2024$month), FUN = function(x) mean(x, na.rm = TRUE))
+monthly_sd2 <- aggregate(data_2024$Ba30_A11, by = list(month = data_2024$month), FUN = function(x) sd(x, na.rm = TRUE))
+
+
+library(gglpot)
+
+
+# Berechne den Median und die Standardabweichung für jeden Monat
+medians <- aggregate(Ba30_A11 ~ month, data = data_2019, FUN = median)
+std_devs <- aggregate(Ba30_A11 ~ month, data = data_2019, FUN = sd)
+
+medians2 <- aggregate(Ba30_A11 ~ month, data = data_2020, FUN = median)
+std_devs2 <- aggregate(Ba30_A11 ~ month, data = data_2020, FUN = sd)
+
+medians3 <- aggregate(Ba30_A11 ~ month, data = data_2021, FUN = median)
+std_devs3 <- aggregate(Ba30_A11 ~ month, data = data_2021, FUN = sd)
+
+medians4 <- aggregate(Ba30_A11 ~ month, data = data_2022, FUN = median)
+std_devs4 <- aggregate(Ba30_A11 ~ month, data = data_2022, FUN = sd)
+
+medians5 <- aggregate(Ba30_A11 ~ month, data = data_2023, FUN = median)
+std_devs5 <- aggregate(Ba30_A11 ~ month, data = data_2023, FUN = sd)
+
+medians6 <- aggregate(Ba30_A11 ~ month, data = data_2024, FUN = median)
+std_devs6 <- aggregate(Ba30_A11 ~ month, data = data_2024, FUN = sd)
+
+data <- merge(medians, std_devs, by = "month")
+data2 <- merge(medians2, std_devs2, by = "month")
+data3 <- merge(medians3, std_devs3, by = "month")
+data4 <- merge(medians4, std_devs4, by = "month")
+data5 <- merge(medians5, std_devs5, by = "month")
+data6 <- merge(medians6, std_devs6, by = "month")
+
+months_labels <- c("January", "February", "March", "April", "May", "June", 
+                   "July", "August", "September", "October", "November", "December")
+
+
+# ggplot erstellen
+ggplot() +
+  geom_point(data = data, aes(x = month, y = Ba30_A11.x, color = "data"), shape = 4, size = 3) +
+  geom_errorbar(data = data, aes(x = month, ymin = Ba30_A11.x - Ba30_A11.y, ymax = Ba30_A11.x + Ba30_A11.y, color = "data"), 
+                width = 0.2) +
+  geom_line(data = data, aes(x = month, y = Ba30_A11.x, group = 1, color = "data"), linetype = "dashed") +
+  geom_point(data = data2, aes(x = month, y = Ba30_A11.x, color = "data2"), shape = 4, size = 3) +
+  geom_errorbar(data = data2, aes(x = month, ymin = Ba30_A11.x - Ba30_A11.y, ymax = Ba30_A11.x + Ba30_A11.y, color = "data2"), 
+                width = 0.2) +
+  geom_line(data = data2, aes(x = month, y = Ba30_A11.x, group = 1, color = "data2"), linetype = "dashed") +
+  geom_point(data = data3, aes(x = month, y = Ba30_A11.x, color = "data3"), shape = 4, size = 3) +
+  geom_errorbar(data = data3, aes(x = month, ymin = Ba30_A11.x - Ba30_A11.y, ymax = Ba30_A11.x + Ba30_A11.y, color = "data3"), 
+                width = 0.2) +
+  geom_line(data = data3, aes(x = month, y = Ba30_A11.x, group = 1, color = "data3"), linetype = "dashed") +
+  geom_point(data = data4, aes(x = month, y = Ba30_A11.x, color = "data4"), shape = 4, size = 3) +
+  geom_errorbar(data = data4, aes(x = month, ymin = Ba30_A11.x - Ba30_A11.y, ymax = Ba30_A11.x + Ba30_A11.y, color = "data4"), 
+                width = 0.2) +
+  geom_line(data = data4, aes(x = month, y = Ba30_A11.x, group = 1, color = "data4"), linetype = "dashed") +
+  geom_point(data = data5, aes(x = month, y = Ba30_A11.x, color = "data5"), shape = 4, size = 3) +
+  geom_errorbar(data = data5, aes(x = month, ymin = Ba30_A11.x - Ba30_A11.y, ymax = Ba30_A11.x + Ba30_A11.y, color = "data5"), 
+                width = 0.2) +
+  geom_line(data = data5, aes(x = month, y = Ba30_A11.x, group = 1, color = "data5"), linetype = "dashed") +
+  geom_point(data = data6, aes(x = month, y = Ba30_A11.x, color = "data6"), shape = 4, size = 3) +
+  geom_errorbar(data = data6, aes(x = month, ymin = Ba30_A11.x - Ba30_A11.y, ymax = Ba30_A11.x + Ba30_A11.y, color = "data6"), 
+                width = 0.2) +
+  geom_line(data = data6, aes(x = month, y = Ba30_A11.x, group = 1, color = "data6"), linetype = "dashed") +
+  labs(title = "Monthly Absorption Coefficient [521nm]",
+       x = "",
+       y = expression("Absorption Coefficient [Mm"^-1*"]")) +
+  scale_x_discrete(labels = months_labels) +
+  scale_color_manual(name = "", 
+                     labels = c("2019", "2020", "2021", "2022", "2023", "2024"),
+                     values = c("red", "blue", "green", "orange", "yellow", "brown")) +
+  theme_minimal()+
+theme(
+  plot.title = element_text(face = "bold", hjust = 0.5) # Hier wird der Haupttitel formatiert
+)
+
+#################################################################################################################################
 # Monthly AE31
 #################################################################################################################################
 
@@ -35,7 +153,7 @@ hourly_avg7 <- aggregate(corrae31data$Ba70_A11, by = list(hour = corrae31data$ho
 
 
 plot(hourly_avg1$hour, hourly_avg1$x, type = "l", col = "red", 
-     xlab = "", ylab = expression("Absorption Coefficient [Mm"^-1*"]"), 
+     xlab = "", ylab = expression("Absorption Coefficent [Mm"^-1*"]"), 
      ylim = c(0, max(hourly_avg1$x, na.rm = TRUE) * 1),
      xaxt = "n")
 
@@ -50,7 +168,7 @@ lines(hourly_avg7$hour, hourly_avg7$x, type = "l", col = "brown")
 # Legende hinzufügen
 legend("topright", legend = c("370 nm", "470 nm", "521 nm", "590 nm", "660 nm", "880 nm", "950 nm"), 
        col = c("red", "orange", "yellow", "green", "blue", "purple", "brown"), lty = 1)
-title("Monthly Averaged Absorption Coefficient")
+title("monthly averaged absorption coefficent")
 
 # X-Achsenbeschriftung einstellen
 axis(1, at = NA)
@@ -61,6 +179,7 @@ month_to_name <- function(month_num) {
 }
 
 axis(side = 1, at = unique(corrae31data$hour), labels = month_to_name(unique(corrae31data$hour)), las = 2, cex.axis = 0.9)
+
 
 #################################################################################################################################
 # Yearly Absorption
@@ -81,22 +200,22 @@ corrae31data$Ba70_A11 <- as.numeric(corrae31data$Ba70_A11)
 
 
 
-plot(time, corrae31data$Ba10_A11, type = "l", col = "red", 
+plot(time, corrae31data$Ba10_A11, type = "l", col = "purple", 
      xlab = "time", ylab = expression("Absorption Coefficient [Mm"^-1*"]")) 
      
 
 
 # Weitere Linien hinzufügen
-lines(time, corrae31data$Ba20_A11, type = "l", col = "orange")
-lines(time, corrae31data$Ba30_A11, type = "l", col = "yellow")
-lines(time, corrae31data$Ba40_A11, type = "l", col = "green")
-lines(time, corrae31data$Ba50_A11, type = "l", col = "blue")
-lines(time, corrae31data$Ba60_A11, type = "l", col = "purple")
+lines(time, corrae31data$Ba20_A11, type = "l", col = "blue")
+lines(time, corrae31data$Ba30_A11, type = "l", col = "green")
+lines(time, corrae31data$Ba40_A11, type = "l", col = "yellow")
+lines(time, corrae31data$Ba50_A11, type = "l", col = "orange")
+lines(time, corrae31data$Ba60_A11, type = "l", col = "red")
 lines(time, corrae31data$Ba70_A11, type = "l", col = "brown")
 
 # Legende hinzufügen
 legend("topright", legend = c("370 nm", "470 nm", "521 nm", "590 nm", "660 nm", "880 nm", "950 nm"), 
-       col = c("red", "orange", "yellow", "green", "blue", "purple", "brown"), lty = 1)
+       col = c("purple","blue", "green", "yellow", "orange", "red", "brown"), lty = 1)
 title("Absorption Coefficient")
 
 
@@ -127,22 +246,22 @@ hourly_avg7 <- aggregate(corrae31data$Ba70_A11, by = list(hour = corrae31data$ho
 
 
 
-plot(hourly_avg1$hour, hourly_avg1$x, type = "l", col = "red", 
+plot(hourly_avg1$hour, hourly_avg1$x, type = "l", col = "purple", 
      xlab = "hour", ylab = expression("Absorption Coefficient [Mm"^-1*"]"), 
      ylim = c(0, max(hourly_avg1$x, na.rm = TRUE) * 1),
      xaxt = "n")
 
 # Weitere Linien hinzufügen
-lines(hourly_avg2$hour, hourly_avg2$x, type = "l", col = "orange")
-lines(hourly_avg3$hour, hourly_avg3$x, type = "l", col = "yellow")
-lines(hourly_avg4$hour, hourly_avg4$x, type = "l", col = "green")
-lines(hourly_avg5$hour, hourly_avg5$x, type = "l", col = "blue")
-lines(hourly_avg6$hour, hourly_avg6$x, type = "l", col = "purple")
+lines(hourly_avg2$hour, hourly_avg2$x, type = "l", col = "blue")
+lines(hourly_avg3$hour, hourly_avg3$x, type = "l", col = "green")
+lines(hourly_avg4$hour, hourly_avg4$x, type = "l", col = "yellow")
+lines(hourly_avg5$hour, hourly_avg5$x, type = "l", col = "orange")
+lines(hourly_avg6$hour, hourly_avg6$x, type = "l", col = "red")
 lines(hourly_avg7$hour, hourly_avg7$x, type = "l", col = "brown")
 
 # Legende hinzufügen
 legend("topright", legend = c("370 nm", "470 nm", "521 nm", "590 nm", "660 nm", "880 nm", "950 nm"), 
-       col = c("red", "orange", "yellow", "green", "blue", "purple", "brown"), lty = 1)
+       col = c("purple","blue", "green", "yellow", "orange", "red", "brown"), lty = 1)
 title("Hourly Averaged Absorption Coefficient")
 
 # X-Achsenbeschriftung einstellen
