@@ -1,4 +1,4 @@
-acorrected <- "/Users/baumannmike/Desktop/Datenbeispiele/Datenbeispiele/2024_04_16_MKN_datachain_test_AE31_1hr_corrected.csv"
+acorrected <- "/Users/baumannmike/Desktop/Datenbeispiele/Datenbeispiele/2024_04_16_MKN_datachain_test_AE31_1hr_corrected_cpd_fixed_STP.csv"
 corrae31data <- read.csv(acorrected)
 
 araw <- "/Users/baumannmike/Desktop/Datenbeispiele/Datenbeispiele/2024_04_16_MKN_datachain_test_AE31_1hr_raw.csv"
@@ -652,12 +652,8 @@ corrae31data$Ba70_A11 <- as.numeric(corrae31data$Ba70_A11)
 
 
 # Berechnung von AAE ohne NA-Werte
-AAE1 <- -log(corrae31data$Ba10_A11/corrae31data$Ba20_A11)/log(370/470)
-AAE2 <- -log(corrae31data$Ba20_A11/corrae31data$Ba30_A11)/log(470/521)
-AAE3 <- -log(corrae31data$Ba30_A11/corrae31data$Ba40_A11)/log(521/590)
-AAE4 <- -log(corrae31data$Ba40_A11/corrae31data$Ba50_A11)/log(590/660)
-AAE5 <- -log(corrae31data$Ba50_A11/corrae31data$Ba60_A11)/log(660/880)
-AAE6 <- -log(corrae31data$Ba60_A11/corrae31data$Ba70_A11)/log(880/950)
+
+AAE1 <- -log(corrae31data$Ba20_A11/corrae31data$Ba60_A11)/log(470/880)
 
 
 
@@ -665,32 +661,23 @@ AAE6 <- -log(corrae31data$Ba60_A11/corrae31data$Ba70_A11)/log(880/950)
 corrae31data$hour <- as.numeric(format(time, "%H"))
 
 # Dann gruppieren nach Stunde und den Durchschnitt berechnen
-hourly_avg1 <- aggregate(AAE1, by = list(hour = corrae31data$hour), FUN = function(x) mean(x, na.rm = TRUE))
-hourly_avg2 <- aggregate(AAE2, by = list(hour = corrae31data$hour), FUN = function(x) mean(x, na.rm = TRUE))
-hourly_avg3 <- aggregate(AAE3, by = list(hour = corrae31data$hour), FUN = function(x) mean(x, na.rm = TRUE))
-hourly_avg4 <- aggregate(AAE4, by = list(hour = corrae31data$hour), FUN = function(x) mean(x, na.rm = TRUE))
-hourly_avg5 <- aggregate(AAE5, by = list(hour = corrae31data$hour), FUN = function(x) mean(x, na.rm = TRUE))
-hourly_avg6 <- aggregate(AAE6, by = list(hour = corrae31data$hour), FUN = function(x) mean(x, na.rm = TRUE))
+hourly_avg1 <- aggregate(AAE1, 
+                         by = list(hour = corrae31data$hour), 
+                         FUN = function(x) mean(x[is.finite(x)], na.rm = TRUE))
 
-# Plot der durchschnittlichen AAE-Werte nach Stunden
-# Plot der durchschnittlichen AAE-Werte nach Stunden
 # Plot erstellen
-plot(hourly_avg1$hour, hourly_avg1$x, type = "l", col = "red", 
+plot(hourly_avg1$hour, hourly_avg1$x, type = "l", col = "black", 
      xlab = "hour", ylab = "AAE", 
-     ylim = c(0, max(hourly_avg1$x, na.rm = TRUE) * 3),
+     ylim = c(0, max(hourly_avg1$x, na.rm = TRUE) * 1.5),
      xaxt = "n")
 
 # Weitere Linien hinzufügen
-lines(hourly_avg2$hour, hourly_avg2$x, type = "l", col = "blue")
-lines(hourly_avg3$hour, hourly_avg3$x, type = "l", col = "green")
-lines(hourly_avg4$hour, hourly_avg4$x, type = "l", col = "purple")
-lines(hourly_avg5$hour, hourly_avg5$x, type = "l", col = "orange")
-lines(hourly_avg6$hour, hourly_avg6$x, type = "l", col = "brown")
+
 
 # Legende hinzufügen
-legend("topright", legend = c("370-470 nm", "470-521 nm", "521-590 nm", "590-660 nm", "660-880 nm", "880-950 nm"), 
-       col = c("red", "blue", "green", "purple", "orange", "brown"), lty = 1)
-title("hourly averaged AAE values")
+legend("topright", legend = c("370-880 nm"), 
+       col = c("black"), lty = 1)
+title("hourly averaged AAE value")
 
 # X-Achsenbeschriftung einstellen
 axis(1, at = NA)

@@ -1,4 +1,4 @@
-acorrected <- "/Users/baumannmike/Desktop/Datenbeispiele/Datenbeispiele/2024_04_16_MKN_datachain_test_AE31_1hr_corrected.csv"
+acorrected <- "/Users/baumannmike/Desktop/Datenbeispiele/Datenbeispiele/2024_04_16_MKN_datachain_test_AE31_1hr_corrected_cpd_fixed_STP.csv"
 corrae31data <- read.csv(acorrected)
 
 araw <- "/Users/baumannmike/Desktop/Datenbeispiele/Datenbeispiele/2024_04_16_MKN_datachain_test_AE31_1hr_raw.csv"
@@ -105,7 +105,7 @@ STP <- (Pstp * Tinstr)/(Pinstr * Tstp)
 data.batn370  <- 1e-3 * rawae31data$X1c0_A11 * 39.5
 
 #Apply Weingartner and STP
-babs <- (data.batn370/3.5)
+babs <- (data.batn370/3.5)*STP
 
 # Plot korrigierte Werte
 plot(time, WG1, col = "blue", type = "l", xlab = "time", ylab = "Mm-1")
