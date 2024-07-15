@@ -5,7 +5,7 @@ corrae31data <- read.csv(acorrected)
 ncorrected <- "/Users/baumannmike/Desktop/Datenbeispiele/Datenbeispiele/2019_03_01_5y_MKN_neph_1hr_cleaned0523.csv"
 corrnephdata <- read.csv(ncorrected)
 
-j
+
 
 ###################################
 #AE31 monthly
